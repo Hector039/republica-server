@@ -5,13 +5,14 @@ import MonthlyPaymentsRepository from "./monthlyPayments.repository.js";
 import AnnualPaymentsRepository from "./annualPayments.repository.js";
 import UsersRepository from "./users.repository.js";
 import UtilsRepository from "./utils.repository.js";
+import 'dotenv/config'
 
 import mysql from 'mysql2/promise'
 
 export default async function mysqlConnection() {
     try {
         const connection = await mysql.createConnection(
-            'mysql://root:root@localhost:3306/republicaclub'
+            process.env.URL_DB
         );
         console.log('DB connected');
         
