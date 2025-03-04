@@ -11,7 +11,7 @@ router.param("uid", merchRequestsController.param);
 router.get("/newrequests", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.getNewMerchRequests);
 router.get("/updatenewrequests", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.updateSeenNewMerchRequests);
 router.get("/", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.getMerchRequests);
-router.get("/allusermerch", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.getAllUserMerchRequest);
+router.get("/allusermerch/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.getAllUserMerchRequest);
 router.get("/getdebtorshistory/:day", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.getDebtorsHistory);
 router.get("/merchrequestbyid/:mid", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.getMerchRequestById);
 router.put("/updatepaymentstatus/", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.updateMerchPayment);

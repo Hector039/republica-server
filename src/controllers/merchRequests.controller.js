@@ -53,12 +53,15 @@ export default class MerchRequestsController {
     }
 
     getAllUserMerchRequest = async (req, res, next) => {
-        const user = req.user;
+        const { uid } = req.params;
         try {
-            if (!user){
-                return res.status(200).send([]);
+            if (!uid) {
+                CustomError.createError({
+                    message: `Datos no recibidos o inválidos.`,
+                    code: TErrors.INVALID_TYPES,
+                });
             }
-            let merchRequests = await this.merchRequestsService.getAllUserMerchRequest(user.id_user);
+            const merchRequests = await this.merchRequestsService.getAllUserMerchRequest(uid);
             res.status(200).send(merchRequests);
         } catch (error) {
             next(error)
