@@ -210,8 +210,8 @@ export default class UsersController {
                 });
             }
             
-            res.cookie("tempCookie", "temporalCookie", { maxAge: 60*60*1000, httpOnly: false })
-            .status(200).send({uid: user[0].id_user});
+            //res.cookie("tempCookie", "temporalCookie", { maxAge: 60*60*1000, httpOnly: false })
+            res.status(200).send({uid: user[0].id_user});
         } catch (error) {
             next(error)
         }
@@ -219,15 +219,15 @@ export default class UsersController {
 
     userChangePass = async (req, res, next) => {
         const { uid, password } = req.body;
-        const cookie = req.cookies.tempCookie ? req.cookies.tempCookie : req.cookies.cookieToken;
+        //const cookie = req.cookies.tempCookie ? req.cookies.tempCookie : req.cookies.cookieToken;
         try {
-            if (!cookie) {
+            /* if (!cookie) {
                 CustomError.createError({
                     name: "Error restaurando contraseña",
                     message: "Expiró el tiempo de restauración. Intenta de nuevo.",
                     code: TErrors.ROUTING,
                 });
-            }
+            } */
             const user = await this.usersService.getUser(uid);
             if (!user.length) {
                 CustomError.createError({
