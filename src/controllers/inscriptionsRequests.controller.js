@@ -144,4 +144,13 @@ export default class InscriptionsRequestsController {
         }
     }
 
+    updateSeenNewInscriptionRequests = async (req, res, next) => {
+        try {
+            await this.inscriptionsRequestsService.updateSeenInscriptionRequests();
+            res.status(200).send();
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }

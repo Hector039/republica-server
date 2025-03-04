@@ -9,6 +9,7 @@ const router = Router();
 
 router.param("iid", inscriptionRequestController.param);
 router.get("/newrequests", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.getNewInscriptionRequests);
+router.get("/updatenewrequests", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.updateSeenNewInscriptionRequests);
 router.get("/", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.getInscriptionsRequests);
 router.get("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.getUserInscriptionRequest);
 router.get("/alluserinscriptions/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.getAllUserInscriptions);

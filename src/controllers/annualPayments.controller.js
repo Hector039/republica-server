@@ -27,7 +27,7 @@ export default class AnnualPaymentsController {
     }
 
     addPayment = async (req, res, next) => {
-        const { uid, year } = req.body;
+        const { uid, year, payDate } = req.body;
         try {
             if (!uid || !year) {
                 CustomError.createError({
@@ -42,7 +42,7 @@ export default class AnnualPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            const newPayment = await this.annualPaymentsService.addPayment(uid, year);
+            const newPayment = await this.annualPaymentsService.addPayment(uid, year, payDate);
             res.status(200).send(newPayment);
         } catch (error) {
             next(error)

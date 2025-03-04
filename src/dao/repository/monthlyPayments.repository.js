@@ -3,10 +3,10 @@ export default class MonthlyPaymentsRepository {
     this.database = database;
   }
 
-  async addPayment(uid, month, year) {
+  async addPayment(uid, month, year, payDate) {
     try {
-      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `month_paid`, `year_paid`) VALUES (?, ?, ?)';
-      const values = [uid, month, year]
+      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`) VALUES (?, ?, ?, ?)';
+      const values = [uid, payDate, month, year]
       const [result, fields] = await this.database.execute(sql, values);
       return result;
     } catch (err) {

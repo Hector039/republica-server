@@ -3,9 +3,9 @@ export default class AnnualPaymentsService {
         this.paymentsRepo = repository;
     }
 
-    async addPayment(uid, year) {
+    async addPayment(uid, year, payDate) {
         try {
-            const payment = await this.paymentsRepo.addPayment(uid, year)
+            const payment = await this.paymentsRepo.addPayment(uid, year, payDate)
             return payment;
         } catch (error) {
             throw error;

@@ -26,7 +26,7 @@ export default class MothlyPaymentsController {
     }
 
     addPayment = async (req, res, next) => {
-        const { uid, month, year } = req.body;
+        const { uid, month, year, payDate } = req.body;
         try {
             if (!uid || !month || !year) {
                 CustomError.createError({
@@ -41,7 +41,7 @@ export default class MothlyPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year);
+            const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate);
             res.status(200).send(newPayment);
         } catch (error) {
             next(error)

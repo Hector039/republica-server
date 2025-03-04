@@ -131,8 +131,6 @@ export default class MerchRequestsController {
 
     updateMerchPayment = async (req, res, next) => {
         const {  mid, payDate } = req.body;
-        console.log(mid, payDate);
-        
         try {
             if (!payDate || !mid) {
                 CustomError.createError({
@@ -169,6 +167,15 @@ export default class MerchRequestsController {
             let newMerchRequests = await this.merchRequestsService.getNewMerchRequests();
             await this.merchRequestsService.updateSeenMerchRequest();
             res.status(200).send(newMerchRequests);
+        } catch (error) {
+            next(error)
+        }
+    }
+    
+    updateSeenNewMerchRequests = async (req, res, next) => {
+        try {
+            await this.merchRequestsService.updateSeenMerchRequest();
+            res.status(200).send();
         } catch (error) {
             next(error)
         }
