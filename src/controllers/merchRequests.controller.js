@@ -168,7 +168,6 @@ export default class MerchRequestsController {
     getNewMerchRequests = async (req, res, next) => {
         try {
             let newMerchRequests = await this.merchRequestsService.getNewMerchRequests();
-            await this.merchRequestsService.updateSeenMerchRequest();
             res.status(200).send(newMerchRequests);
         } catch (error) {
             next(error)

@@ -137,7 +137,6 @@ export default class InscriptionsRequestsController {
     getNewInscriptionRequests = async (req, res, next) => {
         try {
             let newInscRequests = await this.inscriptionsRequestsService.getNewInscriptionRequests();
-            await this.inscriptionsRequestsService.updateSeenInscriptionRequests();
             res.status(200).send(newInscRequests);
         } catch (error) {
             next(error)
