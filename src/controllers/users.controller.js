@@ -210,8 +210,6 @@ export default class UsersController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            
-            //res.cookie("tempCookie", "temporalCookie", { maxAge: 60*60*1000, httpOnly: false })
             res.status(200).send({uid: user[0].id_user});
         } catch (error) {
             next(error)
@@ -220,15 +218,7 @@ export default class UsersController {
 
     userChangePass = async (req, res, next) => {
         const { uid, password } = req.body;
-        //const cookie = req.cookies.tempCookie ? req.cookies.tempCookie : req.cookies.cookieToken;
         try {
-            /* if (!cookie) {
-                CustomError.createError({
-                    name: "Error restaurando contraseña",
-                    message: "Expiró el tiempo de restauración. Intenta de nuevo.",
-                    code: TErrors.ROUTING,
-                });
-            } */
             const user = await this.usersService.getUser(uid);
             if (!user.length) {
                 CustomError.createError({
@@ -260,11 +250,11 @@ export default class UsersController {
 
     userLogout = async (req, res) => {
         res.clearCookie('cookieToken', {
-            httpOnly: false,
+            httpOnly: true,
             secure: true,
-            sameSite: "none"
+            sameSite: "None"
         });
-        return res.status(200).send("Usuario deslogueado!");
+        res.status(200).send("Usuario deslogueado!");
     }
 
 }
