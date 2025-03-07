@@ -1,7 +1,6 @@
 import { generateToken, createHash, isValidPass } from "../tools/utils.js";
 import CustomError from "../tools/customErrors/customError.js";
 import TErrors from "../tools/customErrors/enum.js";
-import 'dotenv/config'
 
 
 export default class UsersController {
@@ -146,7 +145,7 @@ export default class UsersController {
             res.cookie("cookieToken", token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
-                secure: process.env.USERCOOKIESECRET,
+                secure: true,
                 sameSite: "Lax"
             }).status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group })
         } catch (error) {
@@ -172,7 +171,7 @@ export default class UsersController {
             res.cookie("cookieToken", token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
-                secure: process.env.USERCOOKIESECRET,
+                secure: true,
                 sameSite: "Lax"
             }).status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group })
         } catch (error) {
@@ -260,7 +259,7 @@ export default class UsersController {
     userLogout = async (req, res) => {
         res.clearCookie('cookieToken', {
             httpOnly: false,
-            secure: process.env.USERCOOKIESECRET,
+            secure: true,
             sameSite: "none"
         });
         return res.status(200).send("Usuario deslogueado!");
