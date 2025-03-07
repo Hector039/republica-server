@@ -50,10 +50,9 @@ export default class UsersRepository {
 
   changeUserFee = async (uid, newFee) => {
     try {
-      const sql = 'UPDATE `users` SET fee = ? WHERE id_user = ?';
-      const values = [ newFee, uid ];
+      const sql = 'UPDATE `users` SET id_fee = ? WHERE id_user = ?';
     
-      const [result, fields] = await this.database.execute(sql, values);
+      const [result, fields] = await this.database.execute(sql, [ newFee, uid ]);
     
       return result;
     } catch (err) {

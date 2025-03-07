@@ -12,6 +12,24 @@ export default class MonthlyPaymentsService {
         }
     };
 
+    async addLinkedPayment(uid, month, year, payDate, isLinked) {
+        try {
+            const payment = await this.paymentsRepo.addLinkedPayment(uid, month, year, payDate, isLinked)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    async addRepublicPayment(payDate) {
+        try {
+            const payment = await this.paymentsRepo.addRepublicPayment(payDate)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     getHistoryPayments = async (uid) => {
         const result = await this.paymentsRepo.getHistoryPayments(uid);
         return result;

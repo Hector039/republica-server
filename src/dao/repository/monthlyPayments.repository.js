@@ -6,7 +6,27 @@ export default class MonthlyPaymentsRepository {
   async addPayment(uid, month, year, payDate) {
     try {
       const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`) VALUES (?, ?, ?, ?)';
-      const values = [uid, payDate, month, year]
+      const [result, fields] = await this.database.execute(sql, [uid, payDate, month, year]);
+      return result;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  async addRepublicPayment(payDate) {
+    try {
+      const sql2 = 'INSERT INTO `republic_payments`(`pay_date`) VALUES (?)';
+      await this.database.execute(sql2, [payDate]);
+      return;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  async addLinkedPayment(uid, month, year, payDate, isLinked) {
+    try {
+      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`, `is_linked`) VALUES (?, ?, ?, ?, ?)';
+      const values = [uid, payDate, month, year, isLinked]
       const [result, fields] = await this.database.execute(sql, values);
       return result;
     } catch (err) {

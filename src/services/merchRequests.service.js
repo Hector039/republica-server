@@ -38,8 +38,8 @@ export default class ProductService {
         return result;
     }
 
-    async updateMerchPayment(mid, paymentStatus) {
-        const result = await this.merchRepo.updateMerchPayment(mid, paymentStatus);
+    async updateMerchPayment(mid, paymentStatus, amount) {
+        const result = await this.merchRepo.updateMerchPayment(mid, paymentStatus, amount);
         return result;
     }
 

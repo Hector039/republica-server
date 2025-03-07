@@ -41,8 +41,36 @@ export default class MothlyPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
+            if (user.id_fee === 7) {
+                const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate);
+                return newPayment
+            }
             const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate);
+            await this.monthlyPaymentsService.addRepublicPayment(payDate);
             res.status(200).send(newPayment);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    addLinkedPayment = async (req, res, next) => {
+        const { uid, month, year, payDate, isLinked } = req.body;
+        try {
+            if (!uid || !month || !year) {
+                CustomError.createError({
+                    message: "Datos no recibidos o inválidos.",
+                    code: TErrors.INVALID_TYPES,
+                });
+            }
+            const user = await this.usersService.getUser(uid);
+            if (!user.length) {
+                CustomError.createError({
+                    message: `Usuario de ID: ${uid} no encontrado.`,
+                    code: TErrors.NOT_FOUND,
+                });
+            }
+            const newLinkedPayment = await this.monthlyPaymentsService.addLinkedPayment(uid, month, year, payDate, isLinked);
+            res.status(200).send(newLinkedPayment);
         } catch (error) {
             next(error)
         }

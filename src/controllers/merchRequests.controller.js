@@ -133,15 +133,15 @@ export default class MerchRequestsController {
     }
 
     updateMerchPayment = async (req, res, next) => {
-        const {  mid, payDate } = req.body;
+        const {  mid, payDate, amount } = req.body;
         try {
-            if (!payDate || !mid) {
+            if (!payDate || !mid || !amount) {
                 CustomError.createError({
                     message: `Dato no recibido o inválido.`,
                     code: TErrors.INVALID_TYPES,
                 });
             }
-            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate);
+            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate, amount);
             res.status(200).send(merchReq);
         } catch (error) {
             next(error)

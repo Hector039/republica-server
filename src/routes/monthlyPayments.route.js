@@ -10,6 +10,7 @@ const router = Router();
 router.get("/:month/:year", userPassJwt(), handlePolicies(["ADMIN"]), mothlyPaymentsController.getDebtorsHistory);
 router.get("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), mothlyPaymentsController.getHistoryPayments);
 router.post("/", userPassJwt(), handlePolicies(["ADMIN"]), mothlyPaymentsController.addPayment);
+router.post("/linkedpayment/", userPassJwt(), handlePolicies(["ADMIN"]), mothlyPaymentsController.addLinkedPayment);
 
 router.get("/notifydebtor/:uid/:date", userPassJwt(), handlePolicies(["ADMIN"]), mothlyPaymentsController.notifyDebtor);
 router.post("/notifyallmonthlydebtors", userPassJwt(), handlePolicies(["ADMIN"]), mothlyPaymentsController.notifyAllDebtors);

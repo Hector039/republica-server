@@ -18,9 +18,9 @@ const corsOptions = {
 
 export default async function appLoader(app) {
     app.use(cookieParser(process.env.USERCOOKIESECRET));
-    app.use(cors(corsOptions));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cors(corsOptions));
     app.use(express.static(__dirname + "/public"));
     app.use(express.static(imgPath));
     app.use(session({

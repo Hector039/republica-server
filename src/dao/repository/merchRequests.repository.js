@@ -73,12 +73,11 @@ export default class MerchRequestsRepository {
       }
     };
 
-    updateMerchPayment = async (mid, payDate) => {
+    updateMerchPayment = async (mid, payDate, amount) => {
       try {
-        const sql = 'UPDATE `merch_requests` SET pay_date = ? WHERE `id_request` = ?';
-        const values = [ payDate, mid ];
+        const sql = 'UPDATE `merch_requests` SET pay_date = ?, amount = ? WHERE `id_request` = ?';
       
-        const [result, fields] = await this.database.execute(sql, values);
+        const [result, fields] = await this.database.execute(sql, [ payDate, amount, mid ]);
       
         return result;
       } catch (err) {
