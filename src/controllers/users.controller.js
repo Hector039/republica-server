@@ -144,10 +144,10 @@ export default class UsersController {
             const user_group = req.user.user_group;
             let token = generateToken({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });            
             res.cookie("cookieToken", token, {
-                httpOnly: false,
+                httpOnly: true,
                 maxAge: 60 * 60 * 1000,
                 secure: process.env.USERCOOKIESECRET,
-                sameSite: "none"
+                sameSite: "Lax"
             }).status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group })
         } catch (error) {
             next(error)
@@ -170,10 +170,10 @@ export default class UsersController {
             const user_group = req.user.user_group;
             let token = generateToken({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });
             res.cookie("cookieToken", token, {
-                httpOnly: false,
+                httpOnly: true,
                 maxAge: 60 * 60 * 1000,
                 secure: process.env.USERCOOKIESECRET,
-                sameSite: "none"
+                sameSite: "Lax"
             }).status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group })
         } catch (error) {
             next(error)

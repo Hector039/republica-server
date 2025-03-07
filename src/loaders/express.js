@@ -13,7 +13,6 @@ import 'dotenv/config'
 
 const corsOptions = {
     origin: "https://republica-client.onrender.com",
-    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
 };
 
