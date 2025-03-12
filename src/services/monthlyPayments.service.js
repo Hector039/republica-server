@@ -3,18 +3,18 @@ export default class MonthlyPaymentsService {
         this.paymentsRepo = repository;
     }
 
-    async addPayment(uid, month, year, payDate) {
+    async addPayment(uid, month, year, payDate, fid) {
         try {
-            const payment = await this.paymentsRepo.addPayment(uid, month, year, payDate)
+            const payment = await this.paymentsRepo.addPayment(uid, month, year, payDate, fid)
             return payment;
         } catch (error) {
             throw error;
         }
     };
 
-    async addLinkedPayment(uid, month, year, payDate, isLinked) {
+    async addLinkedPayment(uid, month, year, payDate, isLinked, fid) {
         try {
-            const payment = await this.paymentsRepo.addLinkedPayment(uid, month, year, payDate, isLinked)
+            const payment = await this.paymentsRepo.addLinkedPayment(uid, month, year, payDate, isLinked, fid)
             return payment;
         } catch (error) {
             throw error;

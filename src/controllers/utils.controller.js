@@ -169,4 +169,29 @@ export default class UtilsController {
         }
     }
 
+    openCloseFeatures = async (req, res, next) => {
+        const { fid, pos } = req.params;
+        try {
+            if (!fid || pos === undefined) {
+                CustomError.createError({
+                    message: `Faltan datos o son inválidos.`,
+                    code: TErrors.INVALID_TYPES,
+                });
+            }
+            const isOpen = await this.utilsService.openCloseFeatures(fid, pos);
+            res.status(200).send(isOpen);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getPositionFeatures = async (req, res, next) => {
+        try {
+            const featuresPositions = await this.utilsService.getPositionFeatures();
+            res.status(200).send(featuresPositions);
+        } catch (error) {
+            next(error)
+        }
+    }
+
 }

@@ -86,9 +86,9 @@ export default class MerchRequestsController {
 
     addMerchRequest = async (req, res, next) => {
         const { uid } = req.params;
-        const { size, quantity, req_description } = req.body;
+        const { req_description } = req.body;
         try {
-            if (!uid || !quantity || !req_description) {
+            if (!uid || !req_description) {
                 CustomError.createError({
                     message: `Datos no recibidos o inválidos.`,
                     code: TErrors.INVALID_TYPES,
@@ -101,8 +101,31 @@ export default class MerchRequestsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            let newMerchReq = await this.merchRequestsService.addMerchRequest({ uid, size, quantity, req_description });
+            let newMerchReq = await this.merchRequestsService.addMerchRequest( uid, req_description );
             res.status(200).send(newMerchReq);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    addMerchPayment = async (req, res, next) => {
+        const { mid , amount, payDate } = req.body;
+        try {
+            if (!mid || !amount || !payDate) {
+                CustomError.createError({
+                    message: `Datos no recibidos o inválidos.`,
+                    code: TErrors.INVALID_TYPES,
+                });
+            }
+            const merchReq = await this.merchRequestsService.getMerchRequestById(mid);
+            if (!merchReq.length) {
+                CustomError.createError({
+                    message: `El Solicitud de ID ${mid} no encontrada.`,
+                    code: TErrors.NOT_FOUND,
+                });
+            }
+            let newMerchPayment = await this.merchRequestsService.addMerchPayment( mid, amount, payDate );
+            res.status(200).send(newMerchPayment);
         } catch (error) {
             next(error)
         }
@@ -133,15 +156,15 @@ export default class MerchRequestsController {
     }
 
     updateMerchPayment = async (req, res, next) => {
-        const {  mid, payDate, amount } = req.body;
+        const {  mid, payDate } = req.body;
         try {
-            if (!payDate || !mid || !amount) {
+            if (!payDate || !mid) {
                 CustomError.createError({
                     message: `Dato no recibido o inválido.`,
                     code: TErrors.INVALID_TYPES,
                 });
             }
-            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate, amount);
+            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate);
             res.status(200).send(merchReq);
         } catch (error) {
             next(error)
@@ -168,6 +191,7 @@ export default class MerchRequestsController {
     getNewMerchRequests = async (req, res, next) => {
         try {
             let newMerchRequests = await this.merchRequestsService.getNewMerchRequests();
+            //await this.merchRequestsService.updateSeenMerchRequest();
             res.status(200).send(newMerchRequests);
         } catch (error) {
             next(error)

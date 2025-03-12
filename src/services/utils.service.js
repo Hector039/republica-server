@@ -57,4 +57,14 @@ export default class UtilsService {
         return result;
     };
 
+    openCloseFeatures = async (fid, position) => {
+        const result = await this.utilsRepo.openCloseFeatures(fid, position);
+        return result;
+    };
+
+    getPositionFeatures = async () => {
+        const result = await this.utilsRepo.getPositionFeatures();
+        return result;
+    };
+
 };

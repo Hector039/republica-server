@@ -14,10 +14,11 @@ router.get("/", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsControll
 router.get("/allusermerch/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.getAllUserMerchRequest);
 router.get("/getdebtorshistory/:day", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.getDebtorsHistory);
 router.get("/merchrequestbyid/:mid", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.getMerchRequestById);
-router.put("/updatepaymentstatus/", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.updateMerchPayment);
-router.put("/:mid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.updateMerchRequest);
-router.delete("/:mid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.deleteMerchRequest);
-router.post("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.addMerchRequest);
+router.put("/updatepaymentstatus/", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.updateMerchPayment);//Saldar
+//router.put("/:mid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.updateMerchRequest);
+router.delete("/:mid", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.deleteMerchRequest);
+router.post("/addmerchrequest/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.addMerchRequest);
+router.post("/addmerchpayment", userPassJwt(), handlePolicies(["ADMIN"]), merchRequestsController.addMerchPayment);//agregar pago parcial de merch
 router.get("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), merchRequestsController.getUserMerchRequest);
 
 export default router;

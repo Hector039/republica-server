@@ -15,8 +15,8 @@ router.post("/passrestoration", isSessionOn(), handlePolicies(["PUBLIC"]), users
 router.post("/changeorforgot", handlePolicies(["PUBLIC"]), usersController.userChangePass);
 router.get("/logout", handlePolicies(["PUBLIC"]), usersController.userLogout);
 router.post("/", userPassJwt(), handlePolicies(["ADMIN"]), usersController.getUsers);
-router.get("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), usersController.getUser);
-router.put("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), usersController.updateUser);
+router.get("/", userPassJwt(), handlePolicies(["PUBLIC"]), usersController.getUser);
+router.put("/updateuser", userPassJwt(), handlePolicies(["PUBLIC"]), usersController.updateUser);
 router.post("/changeuserstatus", userPassJwt(), handlePolicies(["ADMIN"]), usersController.changeUserStatus);
 router.post("/changeusergroup", userPassJwt(), handlePolicies(["ADMIN"]), usersController.changeUserGroup);
 router.post("/changeuserfee", userPassJwt(), handlePolicies(["ADMIN"]), usersController.changeUserFee);

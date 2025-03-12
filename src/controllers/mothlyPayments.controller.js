@@ -41,11 +41,11 @@ export default class MothlyPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            if (user.id_fee === 7) {
-                const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate);
-                return newPayment
+            if (user[0].id_fee === 7) {
+                const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate, user[0].id_fee);
+                return res.status(200).send(newPayment);
             }
-            const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate);
+            const newPayment = await this.monthlyPaymentsService.addPayment(uid, month, year, payDate, user[0].id_fee);
             await this.monthlyPaymentsService.addRepublicPayment(payDate);
             res.status(200).send(newPayment);
         } catch (error) {
@@ -69,7 +69,7 @@ export default class MothlyPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            const newLinkedPayment = await this.monthlyPaymentsService.addLinkedPayment(uid, month, year, payDate, isLinked);
+            const newLinkedPayment = await this.monthlyPaymentsService.addLinkedPayment(uid, month, year, payDate, isLinked, user[0].id_fee);
             res.status(200).send(newLinkedPayment);
         } catch (error) {
             next(error)

@@ -1,6 +1,7 @@
 import { generateToken, createHash, isValidPass } from "../tools/utils.js";
 import CustomError from "../tools/customErrors/customError.js";
 import TErrors from "../tools/customErrors/enum.js";
+import 'dotenv/config'
 
 
 export default class UsersController {
@@ -9,7 +10,7 @@ export default class UsersController {
     }
 
     getUsers = async (req, res, next) => {
-        const { search, value } = req.body;         
+        const { search, value } = req.body;
         try {
             const users = await this.usersService.getUsers(search, value);
             res.status(200).send(users)
@@ -19,8 +20,11 @@ export default class UsersController {
     }
 
     getUser = async (req, res, next) => {
-        const { uid } = req.params;
+        const uid = req.user === null ? null : req.user.id_user;
         try {
+            if (uid === null){
+                return res.status(200).send(null)
+            }
             const user = await this.usersService.getUser(uid);
             if (!user.length) {
                 CustomError.createError({
@@ -35,7 +39,7 @@ export default class UsersController {
     }
 
     updateUser = async (req, res, next) => {
-        const { uid } = req.params;
+        const uid = req.user.id_user;
         const { first_name, last_name, email, birth_date, dni, tel_contact } = req.body;
         try {
             if (!first_name || !last_name || !birth_date || !dni || !tel_contact) {
@@ -51,7 +55,20 @@ export default class UsersController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            await this.usersService.updateUser(uid, { first_name, last_name, email, birth_date, dni, tel_contact });
+            if (user[0].dni !== dni) {
+                const userByDni = await this.usersService.getUserByDni(dni);
+                if (userByDni.length !== 0) {
+                    CustomError.createError({
+                        message: `El usuario de DNI ${dni} ya existe.`,
+                        code: TErrors.CONFLICT,
+                    });
+                } else {
+                    await this.usersService.updateUser(uid, { first_name, last_name, email, birth_date, dni, tel_contact });
+                    return res.status(200).send(`Usuario correctamente actualizado!`)
+                }
+
+            }
+            await this.usersService.updateUserWoDni(uid, { first_name, last_name, email, birth_date, tel_contact });
             res.status(200).send(`Usuario correctamente actualizado!`)
         } catch (error) {
             next(error)
@@ -59,7 +76,7 @@ export default class UsersController {
     }
 
     changeUserStatus = async (req, res, next) => {
-        const { uid, userStatus } = req.body;        
+        const { uid, userStatus } = req.body;
         try {
             if (userStatus === undefined) {
                 CustomError.createError({
@@ -138,17 +155,12 @@ export default class UsersController {
             const is_admin = req.user.is_admin;
             const user_status = req.user.user_status;
             const register_date = req.user.register_date;
-            const fee = req.user.fee;
+            const fee = req.user.id_fee;
             const tel_contact = req.user.tel_contact;
             const user_group = req.user.user_group;
-            let token = generateToken({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });            
-            res.cookie("cookieToken", token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-                secure: true,
-                sameSite: "None"
-            });
-            res.status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });
+            let token = generateToken({ id_user, first_name, last_name, dni });
+
+            res.status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group, token })
         } catch (error) {
             next(error)
         }
@@ -165,21 +177,22 @@ export default class UsersController {
             const is_admin = req.user.is_admin;
             const user_status = req.user.user_status;
             const register_date = req.user.register_date;
-            const fee = req.user.fee;
+            const fee = req.user.id_fee;
             const tel_contact = req.user.tel_contact;
             const user_group = req.user.user_group;
-            let token = generateToken({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });
-            res.cookie("cookieToken", token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-                secure: true,
-                sameSite: "None"
-            });
-            res.status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group });
+            let token = generateToken({ id_user, first_name, last_name, dni });
+
+            res.status(200).send({ id_user, first_name, last_name, email, birth_date, dni, is_admin, user_status, register_date, fee, tel_contact, user_group, token })
         } catch (error) {
             next(error)
         }
     }
+
+
+    userLogout = async (req, res) => {
+        return res.status(200).send("Usuario deslogueado!");
+    }
+
 
     passRestoration = async (req, res, next) => {
         const { code } = req.body;
@@ -190,7 +203,7 @@ export default class UsersController {
                     code: TErrors.INVALID_TYPES,
                 });
             }
-            
+
             const user = await this.usersService.getUserByDni(code.slice(0, -6));
             if (!user.length) {
                 CustomError.createError({
@@ -200,9 +213,9 @@ export default class UsersController {
                 });
             }
             const date = new Date(user[0].birth_date)
-            const userBirthDate = String(date.getDate()) + String(date.getMonth() + 1).padStart(2, "0") + String(date.getFullYear()).slice(2) 
+            const userBirthDate = String(date.getDate()) + String(date.getMonth() + 1).padStart(2, "0") + String(date.getFullYear()).slice(2)
             const userBirthDateCode = String(code).slice(8)
-            
+
             if (userBirthDateCode != userBirthDate) {
                 CustomError.createError({
                     name: "Error restaurando contraseña",
@@ -210,7 +223,7 @@ export default class UsersController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            res.status(200).send({uid: user[0].id_user});
+            res.status(200).send({ uid: user[0].id_user });
         } catch (error) {
             next(error)
         }
@@ -246,15 +259,6 @@ export default class UsersController {
         } catch (error) {
             next(error)
         }
-    }
-
-    userLogout = async (req, res) => {
-        res.clearCookie('cookieToken', {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None"
-        });
-        res.status(200).send("Usuario deslogueado!");
     }
 
 }

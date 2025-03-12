@@ -3,10 +3,10 @@ export default class MonthlyPaymentsRepository {
     this.database = database;
   }
 
-  async addPayment(uid, month, year, payDate) {
+  async addPayment(uid, month, year, payDate, fid) {
     try {
-      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`) VALUES (?, ?, ?, ?)';
-      const [result, fields] = await this.database.execute(sql, [uid, payDate, month, year]);
+      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`, `id_fee`) VALUES (?, ?, ?, ?, ?)';
+      const [result, fields] = await this.database.execute(sql, [uid, payDate, month, year, fid]);
       return result;
     } catch (err) {
       throw err
@@ -23,10 +23,10 @@ export default class MonthlyPaymentsRepository {
     }
   };
 
-  async addLinkedPayment(uid, month, year, payDate, isLinked) {
+  async addLinkedPayment(uid, month, year, payDate, isLinked, fid) {
     try {
-      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`, `is_linked`) VALUES (?, ?, ?, ?, ?)';
-      const values = [uid, payDate, month, year, isLinked]
+      const sql = 'INSERT INTO `monthly_payments`(`id_user`, `pay_date`, `month_paid`, `year_paid`, `is_linked`, `id_fee`) VALUES (?, ?, ?, ?, ?, ?)';
+      const values = [uid, payDate, month, year, isLinked, fid]
       const [result, fields] = await this.database.execute(sql, values);
       return result;
     } catch (err) {

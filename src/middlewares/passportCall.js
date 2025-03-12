@@ -5,7 +5,7 @@ export const passportCall = strategy => {
         passport.authenticate(strategy,
             {
                 successRedirect: "https://republica-client.onrender.com",
-                failureRedirect: "https://republica-client.onrender.com/users"
+                failureRedirect: "https://republica-client.onrender.com"
             },
             function (error, user, info) {
                 if (error) return next(error);

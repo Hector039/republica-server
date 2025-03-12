@@ -129,4 +129,17 @@ export default class UsersRepository {
     }
   };
 
+  updateUserWoDni = async (uid, updatedUser) => {
+    try {
+      const sql = 'UPDATE `users` SET `first_name` = ?, `last_name` = ?, `email` = ?, `birth_date` = ?, `tel_contact` = ? WHERE `id_user` = ?';
+      const values = [ updatedUser.first_name, updatedUser.last_name, updatedUser.email, updatedUser.birth_date, updatedUser.tel_contact, uid ];
+    
+      const [result, fields] = await this.database.execute(sql, values);
+    
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  };
+
 }

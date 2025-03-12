@@ -22,4 +22,7 @@ router.get("/dailyinscriptions/:day", userPassJwt(), handlePolicies(["ADMIN"]), 
 router.get("/dailyrequests/:day", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.dailyRequests);
 router.get("/dailyexpenditures/:day", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.dailyExpenditures);
 
+router.put("/openclosefeatures/:fid/:pos", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.openCloseFeatures);
+router.get("/openclosefeatures", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.getPositionFeatures);
+
 export default router;

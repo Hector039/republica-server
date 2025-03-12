@@ -38,10 +38,16 @@ export default class UsersService {
         return result;
     }
 
+    async updateUserWoDni(uid, updatedUser){
+        const result = await this.userRepo.updateUserWoDni(uid, updatedUser);
+        return result;
+    }
+    
     async changeUserStatus(uid, userStatus) {
         const result = await this.userRepo.changeUserStatus(uid, userStatus);
         return result;
     }
+
     
     async changeUserGroup(uid, newUserGroup) {
         await this.userRepo.changeUserGroup(uid, newUserGroup);

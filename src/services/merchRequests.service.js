@@ -23,8 +23,13 @@ export default class ProductService {
         return result;
     }
     
-    async addMerchRequest(newMerch) {
-        const result = await this.merchRepo.addMerchRequest(newMerch);
+    async addMerchRequest( uid, req_description ) {
+        const result = await this.merchRepo.addMerchRequest( uid, req_description );
+        return result;
+    }
+
+    async addMerchPayment( mid, amount, payDate ) {
+        const result = await this.merchRepo.addMerchPayment( mid, amount, payDate );
         return result;
     }
 
@@ -38,8 +43,8 @@ export default class ProductService {
         return result;
     }
 
-    async updateMerchPayment(mid, paymentStatus, amount) {
-        const result = await this.merchRepo.updateMerchPayment(mid, paymentStatus, amount);
+    async updateMerchPayment(mid, paymentStatus) {
+        const result = await this.merchRepo.updateMerchPayment(mid, paymentStatus);
         return result;
     }
 

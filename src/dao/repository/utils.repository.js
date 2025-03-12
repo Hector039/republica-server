@@ -63,9 +63,7 @@ export default class UtilsRepository {
     async dailyMonthly(day) {
         try {
             const sql = `SELECT f.fee_descr, COUNT(mp.id_payment) AS registros, SUM(f.amount) AS total, ROW_NUMBER() OVER (ORDER BY f.fee_descr) row_num
-                FROM users u
-                JOIN monthly_payments mp ON u.id_user = mp.id_user
-                JOIN fees f ON u.id_fee = f.id_fee
+                FROM monthly_payments mp JOIN fees f ON mp.id_fee = f.id_fee
                 WHERE mp.is_linked = 0 AND mp.pay_date = ? GROUP BY f.fee_descr`;
             const [rows, fields] = await this.database.query(sql, [day]);
             return rows;
@@ -107,9 +105,9 @@ export default class UtilsRepository {
 
     async dailyRequests(day) {
         try {
-            const sql = `SELECT mr.id_request, COUNT(mr.id_request) AS registros, SUM(mr.amount) AS total
-                            FROM merch_requests mr
-                            WHERE mr.pay_date = ? GROUP BY mr.id_request`;
+            const sql = `SELECT mp.id_req_payment, COUNT(mp.id_req_payment) AS registros, SUM(mp.amount) AS total
+                            FROM merch_payments mp
+                            WHERE mp.pay_date = ? GROUP BY mp.id_req_payment`;
             const [rows, fields] = await this.database.query(sql, [day]);
             return rows;
         } catch (err) {
@@ -146,4 +144,25 @@ AND MONTH(e.pay_date) = ?`;
             throw err;
         }
     };
+
+    async openCloseFeatures(fid, position) {
+        try {
+            const sql = `UPDATE is_open SET feature = ? WHERE id = ?`;
+            const [rows, fields] = await this.database.execute(sql, [position, fid]);
+            return rows;
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    async getPositionFeatures() {
+        try {
+            const sql = `SELECT * FROM is_open`;
+            const [rows, fields]  = await this.database.execute(sql);
+            return rows;
+        } catch (err) {
+            throw err;
+        }
+    };
+
 };
