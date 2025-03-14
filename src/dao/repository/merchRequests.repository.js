@@ -29,9 +29,15 @@ export default class MerchRequestsRepository {
 
   getUserMerchRequest = async (uid) => {
     try {
-      const sql = `SELECT m.req_date, m.req_description, m.pay_date, m.id_request
-                  FROM users u JOIN merch_requests m  
-                  ON u.id_user = m.id_user WHERE m.pay_date IS NOT NULL AND m.id_user = ?`;
+      const sql = `SELECT m.req_date, m.req_description, m.pay_date, m.id_request, COALESCE(SUM(mp.amount), 0) AS amount
+                  FROM users u JOIN merch_requests m ON u.id_user = m.id_user LEFT JOIN merch_payments mp ON m.id_request = mp.id_request
+                  WHERE m.pay_date IS NOT NULL AND m.id_user = ?
+                  GROUP BY m.id_request, m.req_date, m.req_description, m.pay_date`;
+
+      const sql2 = `SELECT m.id_request, m.req_date, m.req_description, m.pay_date, COALESCE(SUM(mp.amount), 0) AS amount
+                  FROM users u JOIN merch_requests m ON u.id_user = m.id_user LEFT JOIN merch_payments mp ON m.id_request = mp.id_request
+                  WHERE u.id_user = ?
+                  GROUP BY m.id_request, m.req_date, m.req_description, m.pay_date`;
       const [rows, fields] = await this.database.execute(sql, [uid]);
       return rows;
     } catch (err) {
