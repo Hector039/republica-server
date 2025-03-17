@@ -1,6 +1,6 @@
 import CustomError from "../tools/customErrors/customError.js";
 import TErrors from "../tools/customErrors/enum.js";
-import { client } from "./utils.controller.js"
+//import { client } from "./utils.controller.js"
 
 
 export default class AnnualPaymentsController {
@@ -27,9 +27,9 @@ export default class AnnualPaymentsController {
     }
 
     addPayment = async (req, res, next) => {
-        const { uid, year, payDate } = req.body;
+        const { uid, year, payDate, amount } = req.body;
         try {
-            if (!uid || !year) {
+            if (!uid || !year || !amount) {
                 CustomError.createError({
                     message: "Datos no recibidos o inválidos.",
                     code: TErrors.INVALID_TYPES,
@@ -42,8 +42,37 @@ export default class AnnualPaymentsController {
                     code: TErrors.NOT_FOUND,
                 });
             }
-            const newPayment = await this.annualPaymentsService.addPayment(uid, year, payDate);
-            res.status(200).send(newPayment);
+            const annualFee = await this.annualPaymentsService.getAnnualFee();
+            
+            const paymentExists = await this.annualPaymentsService.checkPayment(uid, year);
+            
+            if (paymentExists.length > 0 && paymentExists[0].is_complete === 1) {
+                CustomError.createError({
+                    message: `El pago del año ${year} ya existe.`,
+                    code: TErrors.CONFLICT,
+                });
+            } else if (paymentExists.length > 0 && paymentExists[0].is_complete === 0) {
+                if (annualFee[0].amount > (parseInt(amount) + paymentExists[0].amount)) {
+                    await this.annualPaymentsService.updatePayment(paymentExists[0].id_payment, payDate, parseInt(amount) + paymentExists[0].amount);
+                    await this.annualPaymentsService.updatePaymentHistory(paymentExists[0].id_payment, payDate, parseInt(amount));
+                    return res.status(200).send();
+                } else if (annualFee[0].amount <= (parseInt(amount) + paymentExists[0].amount)) {
+                    await this.annualPaymentsService.updatePayment( paymentExists[0].id_payment, payDate, parseInt(amount) + paymentExists[0].amount);
+                    await this.annualPaymentsService.closePayment(paymentExists[0].id_payment);
+                    await this.annualPaymentsService.updatePaymentHistory(paymentExists[0].id_payment, payDate, parseInt(amount));
+                    return res.status(200).send(`Se saldó la matrícula del año ${year}`);
+                }
+            }
+
+            await this.annualPaymentsService.addPayment(uid, year, payDate);
+            const newPayment = await this.annualPaymentsService.checkPayment(uid, year);
+            await this.annualPaymentsService.updatePayment(newPayment[0].id_payment, payDate, parseInt(amount));
+            await this.annualPaymentsService.updatePaymentHistory(newPayment[0].id_payment, payDate, parseInt(amount));
+            if (annualFee[0].amount <= newPayment[0].amount) {
+                await this.annualPaymentsService.closePayment(newPayment[0].id_payment);
+                return res.status(200).send(`Se saldó la matrícula del año ${year}`);
+            }
+            res.status(200).send();
         } catch (error) {
             next(error)
         }
@@ -75,10 +104,10 @@ export default class AnnualPaymentsController {
         }
     }
 
-    
+
     notifyDebtor = async (req, res, next) => {
         const { uid, date } = req.params;
-        
+
         try {
             if (!uid || !date) {
                 CustomError.createError({
@@ -94,21 +123,20 @@ export default class AnnualPaymentsController {
                 });
             }
             const debtHistory = await this.annualPaymentsService.getUserDebtInfo(uid, date);
-            if (!debtHistory.length) {
-                CustomError.createError({
-                    message: `El usuario de ID ${uid} no posee deudas al día de la fecha.`,
-                    code: TErrors.NOT_FOUND,
-                });
+            console.log(debtHistory);
+            
+            if (debtHistory.length === 0) {
+                return res.status(200).send(null)
             }
             let debtList = [];
-            
+
             debtHistory.forEach(debt => {
-                debtList.push(`Año: ${debt.year_paid}`)
+                debtList.push(` ${debt.year_paid}`)
             });
 
-            const chatId = `${user[0].tel_contact}@c.us`;
-            await client.sendMessage(chatId, `Estimado usuario, queremos recordarle que posee retraso/s de su cuota anual. Por favor regularice su situación. Detalle: ${debtList}`);
-            res.status(200).send(`Se envió el mensaje`)
+            res.status(200).send(`Les recordamos que esta adeudando el pago correspondiente al/los año/s: ${debtList}`)
+            //const chatId = `${user[0].tel_contact}@c.us`;
+            //await client.sendMessage(chatId, `Estimado usuario, queremos recordarle que posee retraso/s de su cuota anual. Por favor regularice su situación. Detalle: ${debtList}`);
         } catch (error) {
             next(error)
         }

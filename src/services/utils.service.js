@@ -67,4 +67,41 @@ export default class UtilsService {
         return result;
     };
 
+    
+
+    monthlyClub = async (month) => {
+        const result = await this.utilsRepo.monthlyClub(month);
+        return result;
+    };
+
+    monthly = async (month) => {
+        const result = await this.utilsRepo.monthly(month);
+        return result;
+    };
+
+    monthlyAnnual = async (month) => {
+        const result = await this.utilsRepo.monthlyAnnual(month);
+        return result;
+    };
+
+    monthlyInscriptions = async (month) => {
+        const result = await this.utilsRepo.monthlyInscriptions(month);
+        return result;
+    };
+
+    monthlyRequests = async (month) => {
+        const result = await this.utilsRepo.monthlyRequests(month);
+        return result;
+    };
+
+    monthlyExpenditures = async (month) => {
+        const result = await this.utilsRepo.monthlyExpenditures(month);
+        return result;
+    };
+
+    getMonthGridInfo = async (month) => {
+        const result = await this.utilsRepo.getMonthGridInfo(month);
+        return result;
+    };
+
 };

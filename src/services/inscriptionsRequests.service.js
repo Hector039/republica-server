@@ -56,4 +56,19 @@ export default class InscriptionsRequestsService {
         const result = await this.inscriptionRepo.getDebtorsHistory(day);
         return result;
     };
+
+    addInscPayment = async ( iid, amount, payDate ) => {
+        const result = await this.inscriptionRepo.addInscPayment( iid, amount, payDate );
+        return result;
+    };
+
+    checkPaymentExist = async ( iid ) => {
+        const result = await this.inscriptionRepo.checkPaymentExist( iid );
+        return result;
+    };
+
+    checkInscriptionExistence = async (eid, uid) => {
+        const result = await this.inscriptionRepo.checkInscriptionExistence( eid, uid );
+        return result;
+    }
 };

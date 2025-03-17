@@ -3,19 +3,46 @@ export default class MonthlyPaymentsService {
         this.paymentsRepo = repository;
     }
 
-    async addPayment(uid, month, year, payDate, fid) {
+    async addPayment(uid, month, year, payDate) {
         try {
-            const payment = await this.paymentsRepo.addPayment(uid, month, year, payDate, fid)
+            const payment = await this.paymentsRepo.addPayment(uid, month, year, payDate)
             return payment;
         } catch (error) {
             throw error;
         }
     };
 
-    async addLinkedPayment(uid, month, year, payDate, isLinked, fid) {
+    async addLinkedPayment(uid, month, year, payDate, isLinked) {
         try {
-            const payment = await this.paymentsRepo.addLinkedPayment(uid, month, year, payDate, isLinked, fid)
+            const payment = await this.paymentsRepo.addLinkedPayment(uid, month, year, payDate, isLinked)
             return payment;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    async updatePayment(pid, payDate, amount) {
+        try {
+            const payment = await this.paymentsRepo.updatePayment(pid, payDate, amount)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    async updatePaymentHistory(pid, payDate, amount){
+        try {
+            const payment = await this.paymentsRepo.updatePaymentHistory(pid, payDate, amount)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async closePayment(pid) {
+        try {
+            await this.paymentsRepo.closePayment(pid)
+            return
         } catch (error) {
             throw error;
         }
@@ -51,4 +78,10 @@ export default class MonthlyPaymentsService {
         const result = await this.paymentsRepo.getUserDebtInfo(uid, date);
         return result;
     };
+
+    checkPayment = async (uid, month, year) => {
+        const result = await this.paymentsRepo.checkPayment(uid, month, year);
+        return result;
+    };
+
 };

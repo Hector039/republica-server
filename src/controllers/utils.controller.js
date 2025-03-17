@@ -1,8 +1,8 @@
-import { Client } from 'whatsapp-web.js';
+//import { Client } from 'whatsapp-web.js';
 import CustomError from "../tools/customErrors/customError.js";
 import TErrors from "../tools/customErrors/enum.js";
 
-export const client = new Client({
+/* export const client = new Client({
     webVersionCache: {
         type: "remote",
         remotePath:
@@ -16,7 +16,7 @@ export const client = new Client({
         ],
     },
 });
-
+ */
 
 export default class UtilsController {
     constructor(utilsService) {
@@ -32,22 +32,22 @@ export default class UtilsController {
             next(error)
         }
     }
-
-    getQr = async (req, res, next) => {
-        try {
-            
-            client.on('qr', qr => {
-                res.status(200).send({ qrCode: qr });
-            });
-            client.on('ready', () => {
-                console.log('Client is ready!');
-            });
-            client.initialize();
-            
-        } catch (error) {
-            next(error)
-        }
-    }
+    /* 
+        getQr = async (req, res, next) => {
+            try {
+                
+                client.on('qr', qr => {
+                    res.status(200).send({ qrCode: qr });
+                });
+                client.on('ready', () => {
+                    console.log('Client is ready!');
+                });
+                client.initialize();
+                
+            } catch (error) {
+                next(error)
+            }
+        } */
 
     getFees = async (req, res, next) => {
         try {
@@ -60,7 +60,7 @@ export default class UtilsController {
 
     updateFees = async (req, res, next) => {
         const { fid, newFee } = req.body;
-        
+
         try {
             if (!fid || newFee === undefined) {
                 CustomError.createError({
@@ -75,9 +75,9 @@ export default class UtilsController {
         }
     }
 
-    newExpenditures = async (req, res, next) => {        
+    newExpenditures = async (req, res, next) => {
         const { descr, amount, payDate } = req.body;
-        
+
         try {
             if (!payDate || !descr || !amount) {
                 CustomError.createError({
@@ -92,7 +92,7 @@ export default class UtilsController {
         }
     }
 
-    
+
     getDailyClub = async (req, res, next) => {
         const { day } = req.params;
 
@@ -189,6 +189,87 @@ export default class UtilsController {
         try {
             const featuresPositions = await this.utilsService.getPositionFeatures();
             res.status(200).send(featuresPositions);
+        } catch (error) {
+            next(error)
+        }
+    };
+
+
+
+
+
+    monthlyClub = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthlyClub(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    monthly = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthly(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    monthlyAnnual = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthlyAnnual(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    monthlyInscriptions = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthlyInscriptions(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    monthlyRequests = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthlyRequests(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    monthlyExpenditures = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthPayments = await this.utilsService.monthlyExpenditures(month);
+            res.status(200).send(monthPayments);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getMonthGridInfo = async (req, res, next) => {
+        const { month } = req.params;
+
+        try {
+            const monthInfo = await this.utilsService.getMonthGridInfo(month);
+            res.status(200).send(monthInfo);
         } catch (error) {
             next(error)
         }

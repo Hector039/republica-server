@@ -8,6 +8,16 @@ export default class UsersService {
         return result;
     }
 
+    async getUsersWithUnpaidMonth(search, value) {
+        const result = await this.userRepo.getUsersWithUnpaidMonth(search, value);
+        return result;
+    }
+
+    async getUsersWithUnpaidAnnual(search, value) {
+        const result = await this.userRepo.getUsersWithUnpaidAnnual(search, value);
+        return result;
+    }
+
     async getUser(uid) {
         const result = await this.userRepo.getUser(uid);
         return result;

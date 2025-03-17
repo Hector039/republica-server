@@ -94,6 +94,43 @@ export default class InscriptionsRequestsController {
         }
     }
 
+    addInscPayment = async (req, res, next) => {
+        const { iid , amount, payDate } = req.body;
+        try {
+            if (!iid || !amount || !payDate) {
+                CustomError.createError({
+                    message: `Datos no recibidos o inválidos.`,
+                    code: TErrors.INVALID_TYPES,
+                });
+            }
+            const inscReq = await this.inscriptionsRequestsService.getInscriptionRequest(iid);
+            if (!inscReq.length) {
+                CustomError.createError({
+                    message: `El Solicitud de ID ${iid} no encontrada.`,
+                    code: TErrors.NOT_FOUND,
+                });
+            }
+            let paymentExist = await this.inscriptionsRequestsService.checkPaymentExist( iid );            
+            if (paymentExist.length > 0 && paymentExist[0].pay_date !== null) {
+                CustomError.createError({
+                    message: `El pago de inscripción ya existe.`,
+                    code: TErrors.CONFLICT,
+                });
+            }else if (paymentExist.length > 0 && paymentExist[0].pay_date === null) {
+                if (paymentExist[0].inscription_price > (parseInt(amount) + paymentExist[0].total_amount)) {
+                    await this.inscriptionsRequestsService.addInscPayment(paymentExist[0].id_inscription, parseInt(amount), payDate);
+                    return res.status(200).send();
+                } else if (paymentExist[0].inscription_price <= (parseInt(amount) + paymentExist[0].total_amount)) {
+                    await this.inscriptionsRequestsService.updateInscriptionRequest(paymentExist[0].id_inscription, payDate);
+                    await this.inscriptionsRequestsService.addInscPayment(paymentExist[0].id_inscription, parseInt(amount), payDate);
+                    return res.status(200).send();
+                }
+            }
+        } catch (error) {
+            next(error)
+        }
+    }
+
     addInscriptionRequest = async (req, res, next) => {
         const { eid, uid } = req.params;
         try {
@@ -114,6 +151,13 @@ export default class InscriptionsRequestsController {
             if (!event.length) {
                 CustomError.createError({
                     message: `Evento ID: ${eid} no encontrado.`,
+                    code: TErrors.NOT_FOUND
+                });
+            };
+            const inscExists = await this.inscriptionsRequestsService.checkInscriptionExistence(eid, uid);            
+            if (inscExists.length != 0) {
+                CustomError.createError({
+                    message: `Ya está inscripto al evento ${inscExists[0].event_name}.`,
                     code: TErrors.NOT_FOUND
                 });
             };

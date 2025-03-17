@@ -5,7 +5,6 @@ import userRouter from "./users.route.js";
 import monthlyPaymentsRouter from "./monthlyPayments.route.js";
 import annualPaymentsRouter from "./annualPayments.route.js";
 import merchRequestsRouter from "./merchRequests.route.js";
-import contactRouter from "./contact.route.js";
 import utilsRouter from "./utils.route.js";
 
 const router = Router();
@@ -16,7 +15,6 @@ router.use("/api/users", userRouter);
 router.use("/api/monthlypayments", monthlyPaymentsRouter);
 router.use("/api/annualpayments", annualPaymentsRouter);
 router.use("/api/merchrequests", merchRequestsRouter);
-router.use("/api/contact", contactRouter);
 router.use("/api/utils", utilsRouter);
 
 export default router;

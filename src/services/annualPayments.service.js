@@ -12,6 +12,33 @@ export default class AnnualPaymentsService {
         }
     };
 
+    async updatePayment(pid, payDate, amount) {
+        try {
+            const payment = await this.paymentsRepo.updatePayment(pid, payDate, amount)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    async updatePaymentHistory(pid, payDate, amount){
+        try {
+            const payment = await this.paymentsRepo.updatePaymentHistory(pid, payDate, amount)
+            return payment;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async closePayment(pid) {
+        try {
+            await this.paymentsRepo.closePayment(pid)
+            return
+        } catch (error) {
+            throw error;
+        }
+    };
+
     getHistoryPayments = async (uid) => {
         const result = await this.paymentsRepo.getHistoryPayments(uid);
         return result;
@@ -34,6 +61,16 @@ export default class AnnualPaymentsService {
 
     getUserDebtInfo = async (uid,date) => {
         const result = await this.paymentsRepo.getUserDebtInfo(uid, date);
+        return result;
+    };
+
+    checkPayment = async (uid, year) => {
+        const result = await this.paymentsRepo.checkPayment(uid, year);
+        return result;
+    };
+
+    getAnnualFee = async () => {
+        const result = await this.paymentsRepo.getAnnualFee();
         return result;
     };
 };

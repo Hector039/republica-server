@@ -131,6 +131,23 @@ export default class MerchRequestsController {
         }
     }
 
+    updateMerchPayment = async (req, res, next) => {
+        const {  mid, payDate } = req.body;
+        try {
+            if (!payDate || !mid) {
+                CustomError.createError({
+                    message: `Dato no recibido o inválido.`,
+                    code: TErrors.INVALID_TYPES,
+                });
+            }
+            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate);
+            res.status(200).send(merchReq);
+        } catch (error) {
+            next(error)
+        }
+    }
+
+/* 
     updateMerchRequest = async (req, res, next) => {
         const { mid } = req.params;
         const { size, quantity, req_description } = req.body;
@@ -153,24 +170,9 @@ export default class MerchRequestsController {
         } catch (error) {
             next(error)
         }
-    }
+    } */
 
-    updateMerchPayment = async (req, res, next) => {
-        const {  mid, payDate } = req.body;
-        try {
-            if (!payDate || !mid) {
-                CustomError.createError({
-                    message: `Dato no recibido o inválido.`,
-                    code: TErrors.INVALID_TYPES,
-                });
-            }
-            let merchReq = await this.merchRequestsService.updateMerchPayment(mid, payDate);
-            res.status(200).send(merchReq);
-        } catch (error) {
-            next(error)
-        }
-    }
-
+    
     deleteMerchRequest = async (req, res, next) => {
         const { mid } = req.params;
         try {

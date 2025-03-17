@@ -14,7 +14,8 @@ router.get("/", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestCon
 router.get("/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.getUserInscriptionRequest);
 router.get("/alluserinscriptions/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.getAllUserInscriptions);
 router.get("/getdebtorshistory/:day", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.getDebtorsHistory);
-router.put("/", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.updateInscriptionRequest);
+router.post("/addinscpayment", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.addInscPayment);//agregar pago parcial
+router.put("/", userPassJwt(), handlePolicies(["ADMIN"]), inscriptionRequestController.updateInscriptionRequest);//saldar inscripción
 router.post("/:eid/:uid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.addInscriptionRequest);
 router.delete("/:iid", userPassJwt(), handlePolicies(["PUBLIC"]), inscriptionRequestController.deleteInscriptionRequest);
 
