@@ -4,16 +4,134 @@ export default class UsersRepository {
   }
 
   getUsers = async (search, value) => {
+
+    const sql = `SELECT 
+                        u.id_user, 
+                        u.first_name, 
+                        u.last_name, 
+                        u.dni, 
+                        u.register_date, 
+                        u.user_status, 
+                        f.fee_descr,
+                        f.amount AS fee_month,
+                        (SELECT f2.amount FROM fees f2 WHERE f2.id_fee = 10) AS fee_annual,
+                        
+                        -- Última cuota mensual impaga
+                        mp.year_paid AS last_unpaid_month_year,
+                        mp.month_paid AS last_unpaid_month,
+                        mp.amount AS last_unpaid_month_amount,
+                        
+                        -- Último pago anual impago
+                        ap.year_paid AS last_unpaid_year,
+                        ap.amount AS last_unpaid_amount
+
+                    FROM users u
+                    JOIN fees f ON u.id_fee = f.id_fee
+
+                    -- Unión con pagos mensuales
+                    LEFT JOIN monthly_payments mp 
+                        ON u.id_user = mp.id_user 
+                        AND mp.is_complete = 0
+                        AND (mp.year_paid, mp.month_paid) = (
+                            SELECT mp2.year_paid, mp2.month_paid
+                            FROM monthly_payments mp2
+                            WHERE mp2.id_user = u.id_user 
+                            AND mp2.is_complete = 0
+                            ORDER BY mp2.year_paid DESC, mp2.month_paid DESC
+                            LIMIT 1
+                        )
+
+                    -- Unión con pagos anuales
+                    LEFT JOIN annual_payments ap 
+                        ON u.id_user = ap.id_user 
+                        AND ap.is_complete = 0
+                        AND ap.year_paid = (
+                            SELECT MAX(ap2.year_paid)
+                            FROM annual_payments ap2
+                            WHERE ap2.id_user = u.id_user 
+                            AND ap2.is_complete = 0
+                        )`;
+    
+    try {
+      if (search === 'TODO') {
+        const [rows, fields] = await this.database.execute(sql);
+        return rows;
+      } else if (!value) {
+        const [rows, fields] = await this.database.execute(sql);
+        return rows;
+      }else {
+        let valueWilcard = value + '%';
+        const sql = `SELECT 
+                        u.id_user, 
+                        u.first_name, 
+                        u.last_name, 
+                        u.dni, 
+                        u.register_date, 
+                        u.user_status, 
+                        f.fee_descr,
+                        f.amount AS fee_month,
+                        (SELECT f2.amount FROM fees f2 WHERE f2.id_fee = 10) AS fee_annual,
+                        
+                        -- Última cuota mensual impaga
+                        mp.year_paid AS last_unpaid_month_year,
+                        mp.month_paid AS last_unpaid_month,
+                        mp.amount AS last_unpaid_month_amount,
+                        
+                        -- Último pago anual impago
+                        ap.year_paid AS last_unpaid_year,
+                        ap.amount AS last_unpaid_amount
+
+                    FROM users u
+                    JOIN fees f ON u.id_fee = f.id_fee
+
+                    -- Unión con pagos mensuales
+                    LEFT JOIN monthly_payments mp 
+                        ON u.id_user = mp.id_user 
+                        AND mp.is_complete = 0
+                        AND (mp.year_paid, mp.month_paid) = (
+                            SELECT mp2.year_paid, mp2.month_paid
+                            FROM monthly_payments mp2
+                            WHERE mp2.id_user = u.id_user 
+                            AND mp2.is_complete = 0
+                            ORDER BY mp2.year_paid DESC, mp2.month_paid DESC
+                            LIMIT 1
+                        )
+
+                    -- Unión con pagos anuales
+                    LEFT JOIN annual_payments ap 
+                        ON u.id_user = ap.id_user 
+                        AND ap.is_complete = 0
+                        AND ap.year_paid = (
+                            SELECT MAX(ap2.year_paid)
+                            FROM annual_payments ap2
+                            WHERE ap2.id_user = u.id_user 
+                            AND ap2.is_complete = 0
+                        )
+
+                    WHERE u.${search} LIKE '${valueWilcard}'`;
+
+        const [rows, fields] = await this.database.execute(sql);
+        return rows;
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  getUsersClean = async (search, value) => {
+    
     const sql = `SELECT 
                     u.id_user, 
                     u.first_name, 
                     u.last_name, 
                     u.dni, 
                     u.register_date, 
+                    u.birth_date, 
                     u.user_status, 
                     u.tel_contact, 
-                    u.user_group, 
-                    f.id_fee 
+                    u.user_group,
+                    f.id_fee,
+                    f.fee_descr
                     FROM users u JOIN fees f ON u.id_fee = f.id_fee`
 
     try {
@@ -25,18 +143,22 @@ export default class UsersRepository {
         return rows;
       }else {
         let valueWilcard = value + '%';
-        const sql2 = `SELECT 
+
+        const sql = `SELECT 
                     u.id_user, 
                     u.first_name, 
                     u.last_name, 
                     u.dni, 
                     u.register_date, 
+                    u.birth_date,
                     u.user_status, 
                     u.tel_contact,
-                    u.user_group, 
-                    f.id_fee 
+                    u.user_group,
+                    f.id_fee,
+                    f.fee_descr
                     FROM users u JOIN fees f ON u.id_fee = f.id_fee WHERE u.${search} LIKE '${valueWilcard}'`
-        const [rows, fields] = await this.database.execute(sql2);
+
+        const [rows, fields] = await this.database.execute(sql);
         return rows;
       }
     } catch (err) {
@@ -44,133 +166,6 @@ export default class UsersRepository {
     }
   };
 
-  getUsersWithUnpaidAnnual = async (search, value) => {
-    try {
-      const sql = `SELECT 
-                    u.id_user, 
-                    u.first_name, 
-                    u.last_name, 
-                    u.dni, 
-                    u.register_date, 
-                    u.user_status, 
-                    f.fee_descr,
-                    ap.year_paid AS last_unpaid_year,
-                    ap.amount AS last_unpaid_amount
-                FROM users u
-                JOIN fees f ON u.id_fee = f.id_fee
-                LEFT JOIN annual_payments ap 
-                    ON u.id_user = ap.id_user 
-                    AND ap.is_complete = 0
-                    AND ap.year_paid = (
-                        SELECT MAX(ap2.year_paid)
-                        FROM annual_payments ap2
-                        WHERE ap2.id_user = u.id_user AND ap2.is_complete = 0
-                    )`;
-
-      if (search === 'TODO') {
-        const [rows, fields] = await this.database.execute(sql);
-        return rows;
-      } else if (!value) {
-        const [rows, fields] = await this.database.execute(sql);
-        return rows;
-      }else {
-        let valueWilcard = value + '%';
-        const sql2 = `SELECT 
-                          u.id_user, 
-                          u.first_name, 
-                          u.last_name, 
-                          u.dni, 
-                          u.register_date, 
-                          u.user_status, 
-                          f.fee_descr,
-                          ap.year_paid AS last_unpaid_year,
-                          ap.amount AS last_unpaid_amount
-                      FROM users u
-                      JOIN fees f ON u.id_fee = f.id_fee
-                      LEFT JOIN annual_payments ap 
-                          ON u.id_user = ap.id_user 
-                          AND ap.is_complete = 0
-                          AND ap.year_paid = (
-                              SELECT MAX(ap2.year_paid)
-                              FROM annual_payments ap2
-                              WHERE ap2.id_user = u.id_user AND ap2.is_complete = 0
-                          )
-                      WHERE u.${search} LIKE '${valueWilcard}'`;
-        const [rows, fields] = await this.database.execute(sql2);
-        return rows;
-      }
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  getUsersWithUnpaidMonth = async (search, value) => {
-    try {
-      const sql = `SELECT 
-                          u.id_user, 
-                          u.first_name, 
-                          u.last_name, 
-                          u.dni, 
-                          u.register_date, 
-                          u.user_status, 
-                          f.fee_descr,
-                          mp.year_paid AS last_unpaid_month_year,
-                          mp.month_paid AS last_unpaid_month,
-                          mp.amount AS last_unpaid_month_amount
-                      FROM users u
-                      JOIN fees f ON u.id_fee = f.id_fee
-                      LEFT JOIN monthly_payments mp 
-                          ON u.id_user = mp.id_user 
-                          AND mp.is_complete = 0
-                          AND (mp.year_paid, mp.month_paid) = (
-                              SELECT mp2.year_paid, mp2.month_paid
-                              FROM monthly_payments mp2
-                              WHERE mp2.id_user = u.id_user 
-                              AND mp2.is_complete = 0
-                              ORDER BY mp2.year_paid DESC, mp2.month_paid DESC
-                              LIMIT 1
-                          )`;
-
-      if (search === 'TODO') {
-        const [rows, fields] = await this.database.execute(sql);
-        return rows;
-      } else if (!value) {
-        const [rows, fields] = await this.database.execute(sql);
-        return rows;
-      }else {
-        let valueWilcard = value + '%';
-        const sql2 = `SELECT 
-                          u.id_user, 
-                          u.first_name, 
-                          u.last_name, 
-                          u.dni, 
-                          u.register_date, 
-                          u.user_status, 
-                          f.fee_descr,
-                          mp.year_paid AS last_unpaid_month_year,
-                          mp.month_paid AS last_unpaid_month,
-                          mp.amount AS last_unpaid_month_amount
-                      FROM users u
-                      JOIN fees f ON u.id_fee = f.id_fee
-                      LEFT JOIN monthly_payments mp 
-                          ON u.id_user = mp.id_user 
-                          AND mp.is_complete = 0
-                          AND (mp.year_paid, mp.month_paid) = (
-                              SELECT mp2.year_paid, mp2.month_paid
-                              FROM monthly_payments mp2
-                              WHERE mp2.id_user = u.id_user 
-                              AND mp2.is_complete = 0
-                              ORDER BY mp2.year_paid DESC, mp2.month_paid DESC
-                              LIMIT 1
-                          )
-                      WHERE u.${search} LIKE '${valueWilcard}'`;
-        const [rows, fields] = await this.database.execute(sql2);
-        return rows;
-      }
-    } catch (err) {
-      throw err;
-    }
-  };
 
   changeUserStatus = async (uid, userStatus) => {
     try {

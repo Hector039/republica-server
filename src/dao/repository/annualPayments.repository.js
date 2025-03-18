@@ -66,7 +66,7 @@ export default class AnnualPaymentsRepository {
 
   async getAnnualFee() {
     try {
-      const sql = 'SELECT amount FROM `fees` WHERE id_fee = 10';
+      const sql = 'SELECT f.amount FROM fees f WHERE id_fee = 10';
       const [rows, fields] = await this.database.query(sql);
       return rows;
     } catch (err) {

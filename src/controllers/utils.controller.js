@@ -1,22 +1,5 @@
-//import { Client } from 'whatsapp-web.js';
 import CustomError from "../tools/customErrors/customError.js";
 import TErrors from "../tools/customErrors/enum.js";
-
-/* export const client = new Client({
-    webVersionCache: {
-        type: "remote",
-        remotePath:
-            "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
-    },
-    puppeteer: {
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox'
-        ],
-    },
-});
- */
 
 export default class UtilsController {
     constructor(utilsService) {
@@ -32,23 +15,7 @@ export default class UtilsController {
             next(error)
         }
     }
-    /* 
-        getQr = async (req, res, next) => {
-            try {
-                
-                client.on('qr', qr => {
-                    res.status(200).send({ qrCode: qr });
-                });
-                client.on('ready', () => {
-                    console.log('Client is ready!');
-                });
-                client.initialize();
-                
-            } catch (error) {
-                next(error)
-            }
-        } */
-
+    
     getFees = async (req, res, next) => {
         try {
             const fees = await this.utilsService.getFees();

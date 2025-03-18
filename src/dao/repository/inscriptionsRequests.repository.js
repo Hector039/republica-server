@@ -61,9 +61,13 @@ export default class InscriptionsRequestsRepository {
 
     getAllUserInscriptions = async (uid) => {
       try {
-        const sql2 = `SELECT e.id_event, e.publication_date, e.event_date, e.event_name, e.event_description, e.inscription_price, i.id_user, i.id_inscription, i.pay_date
-                  FROM custom_events e JOIN inscription_requests i  
-                  ON e.id_event = i.id_event WHERE i.id_user = ?`;
+        const sql2 = `SELECT e.id_event, e.publication_date, e.event_date, e.event_name, e.event_description, 
+                            e.inscription_price, i.id_user, i.id_inscription, i.pay_date, COALESCE(SUM(ip.amount), 0) AS amount
+                  FROM custom_events e JOIN inscription_requests i ON e.id_event = i.id_event 
+                  LEFT JOIN inscription_payments ip ON i.id_inscription = ip.id_inscription
+                  WHERE i.id_user = ?
+                  GROUP BY e.id_event, e.publication_date, e.event_date, e.event_name, e.event_description, 
+                            e.inscription_price, i.id_user, i.id_inscription, i.pay_date`;
         const [rows, fields] = await this.database.query(sql2, [uid]);
         return rows;
       } catch (err) {

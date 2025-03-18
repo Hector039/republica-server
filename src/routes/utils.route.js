@@ -9,7 +9,6 @@ const utilsController = new UtilsController(utilsService);
 const router = Router();
 
 router.get("/notifications", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.getAdminNotifications);
-//router.get("/getqr", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.getQr);
 router.get("/fees", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.getFees);
 router.post("/updatefees", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.updateFees);
 router.post("/expenditures", userPassJwt(), handlePolicies(["ADMIN"]), utilsController.newExpenditures);

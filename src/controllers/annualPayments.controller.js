@@ -68,7 +68,9 @@ export default class AnnualPaymentsController {
             const newPayment = await this.annualPaymentsService.checkPayment(uid, year);
             await this.annualPaymentsService.updatePayment(newPayment[0].id_payment, payDate, parseInt(amount));
             await this.annualPaymentsService.updatePaymentHistory(newPayment[0].id_payment, payDate, parseInt(amount));
-            if (annualFee[0].amount <= newPayment[0].amount) {
+            console.log(annualFee[0].amount, newPayment[0].amount);
+            
+            if (annualFee[0].amount <= amount) {
                 await this.annualPaymentsService.closePayment(newPayment[0].id_payment);
                 return res.status(200).send(`Se saldó la matrícula del año ${year}`);
             }

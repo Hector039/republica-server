@@ -19,6 +19,16 @@ export default class UsersController {
         }
     }
 
+    getUsersClean = async (req, res, next) => {
+        const { search, value } = req.body;
+        try {
+            const users = await this.usersService.getUsersClean(search, value);
+            res.status(200).send(users)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     getUsersWithUnpaidMonth = async (req, res, next) => {
         const { search, value } = req.body;
         try {

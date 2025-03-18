@@ -112,19 +112,6 @@ export default class MerchRequestsRepository {
     }
   };
 
-  /* updateMerchRequest = async (mid, updatedMerchReq) => {
-    try {
-      const sql = 'UPDATE `merch_requests` SET `size` = ?, `quantity` = ?, `req_description` = ? WHERE `id_request` = ?';
-      const values = [updatedMerchReq.size, updatedMerchReq.quantity, updatedMerchReq.req_description, mid];
-
-      const [result, fields] = await this.database.execute(sql, values);
-
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  }; */
-
   updateMerchPayment = async (mid, payDate) => {
     try {
       const sql = 'UPDATE `merch_requests` SET pay_date = ? WHERE `id_request` = ?';
